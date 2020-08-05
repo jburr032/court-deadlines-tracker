@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deadlines-auth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deadlines-auth
+  template:
+    metadata:
+      labels:
+        app: deadlines-auth
+    spec:
+      containers:
+        - name: auth
+          image: 0320629/deadlines-auth
+          # env:
+          #   - name: MONGO_URI
+          #     value: "mongodb://auth-mongo-srv:27017/auth"
+          #   - name: JWT_KEY
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: deadlines-jwt-secret
+          #         key: JWT_KEY
+---
+# Set upt cluster IP service
+apiVersion: v1
+kind: Service
+metadata:
+  name: deadlines-auth-srv
+spec:
+  selector:
+    app: deadlines-auth
+  ports:
+    - name: deadlines-auth-depl
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

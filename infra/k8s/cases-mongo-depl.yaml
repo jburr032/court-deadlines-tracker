@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deadlines-cases-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deadlines-cases-mongo
+  template:
+    metadata:
+      labels:
+        app: deadlines-cases-mongo
+    spec:
+      containers:
+        - name: deadlines-cases-mongo
+          image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: deadlines-cases-mongo-depl
+spec:
+  selector:
+    app: deadlines-cases-mongo
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
