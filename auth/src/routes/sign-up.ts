@@ -29,7 +29,7 @@ router.post(
       sendFromEmail: sendFromEmail ? sendFromEmail : signUpEmail,
       password,
     });
-    user.save();
+    await user.save();
 
     const jwToken = jwt.sign(
       {
