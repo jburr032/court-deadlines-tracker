@@ -1,8 +1,9 @@
 import express from "express";
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
-import { errorHandler, currentUser } from "@parkerco/common";
+import { errorHandler } from "@parkerco/common";
 
+import { currentUser } from "./middleware/current-user";
 import { signupRouter } from "./routes/sign-up";
 import { signInRouter } from "./routes/sign-in";
 import { signOutRouter } from "./routes/sign-out";
