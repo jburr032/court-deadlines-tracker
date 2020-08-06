@@ -20,30 +20,35 @@ router.post(
   validateRequest,
   async (req: Request, res: Response) => {
     const { username, signUpEmail, sendFromEmail, password } = req.body;
+    try {
+      // Save user to db
+      const user = User.build({
+        username,
+        signUpEmail,
+        // Use signUpEmail if user does not specify a different address to send orders from
+        sendFromEmail: sendFromEmail ? sendFromEmail : signUpEmail,
+        password,
+      });
+      await user.save();
 
-    // Save user to db
-    const user = User.build({
-      username,
-      signUpEmail,
-      // Use signUpEmail if user does not specify a different address to send orders from
-      sendFromEmail: sendFromEmail ? sendFromEmail : signUpEmail,
-      password,
-    });
-    await user.save();
+      const userJwt = jwt.sign(
+        {
+          id: user.id,
+          signUpEmail: user.signUpEmail,
+        },
+        "abjjhjd" //process.env.JWT_KEY!
+      );
 
-    const jwToken = jwt.sign(
-      {
-        id: user.id,
-        email: user.signUpEmail,
-      },
-      "abjjhjd" //process.env.JWT_KEY!
-    );
+      req.session = {
+        jwt: userJwt,
+      };
 
-    req.session = {
-      jwt: jwToken,
-    };
-
-    res.status(201).send(user);
+      res.status(201).send(user);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      res.status(500);
+    }
   }
 );
 

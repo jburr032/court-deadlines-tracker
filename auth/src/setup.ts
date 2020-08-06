@@ -26,7 +26,7 @@ declare global {
 let mongo: any;
 
 beforeAll(async () => {
-  const jwt_key = "asdfasdf";
+  const jwt_key = "abjjhjd";
 
   mongo = new MongoMemoryServer();
   const mongoUri = await mongo.getUri();
@@ -62,5 +62,7 @@ global.signIn = async () => {
 
   // Returns string[]
   const cookie = response.get("Set-Cookie");
-  return cookie;
+  const userId = response.body.id;
+
+  return [cookie, userId];
 };
