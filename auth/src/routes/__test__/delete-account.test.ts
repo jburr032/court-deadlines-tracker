@@ -1,17 +1,18 @@
 import request from "supertest";
+import mongoose from "mongoose";
 
 import { app } from "../../app";
 import { User } from "../../models/user-model";
 
 describe("Tests for the delete route", () => {
   it("Checks the delete was unsuccessful due to unauthorized access", async () => {
-    const [userId] = await global.signIn();
+    const [cookie, userId] = await global.signIn();
 
     // Attempting to delete the account with a different cookie
     return request(app)
       .delete(`/api/v1/${userId}/delete-account`)
       .send({ password: "password" })
-      .expect(404);
+      .expect(401);
   });
 
   it("Checks 401 for incorrect password", async () => {
@@ -21,7 +22,18 @@ describe("Tests for the delete route", () => {
       .delete(`/api/v1/${userId}/delete-account`)
       .set("Cookie", cookie)
       .send({ password: "passwrod" })
-      .expect(500);
+      .expect(401);
+  });
+
+  it("Checks 401 for incorred userId", async () => {
+    let [cookie, userId] = await global.signIn();
+    userId = mongoose.Types.ObjectId().toHexString();
+
+    await request(app)
+      .delete(`/api/v1/${userId}/delete-account`)
+      .set("Cookie", cookie)
+      .send({ password: "password" })
+      .expect(400);
   });
 
   it("Checks the account is removed from mongoDB", async () => {

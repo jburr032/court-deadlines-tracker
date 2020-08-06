@@ -1,3 +1,9 @@
+/**
+ * Local implementation of the same currentUser middle in @package parkerco/common
+ * for local testing when uploading to Github with Github Activities and
+ * using a random JWT_KEY until @var process.env.JWT_KEY is implemented
+ */
+
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 

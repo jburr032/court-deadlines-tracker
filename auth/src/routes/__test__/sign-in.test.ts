@@ -14,7 +14,7 @@ const signUpHelper = async () => {
 };
 
 describe("Tests for the sign-in route", () => {
-  it("Checks for 400 for invalid email", async () => {
+  it("Checks for 400 for unformatted email", async () => {
     await signUpHelper();
 
     await request(app)
@@ -26,7 +26,19 @@ describe("Tests for the sign-in route", () => {
       .expect(400);
   });
 
-  it("Checks for 400 for invalid password", async () => {
+  it("Checks for 404 for non-existent email (by-passes the express-validator checks", async () => {
+    await signUpHelper();
+
+    await request(app)
+      .post("/api/v1/sign-in")
+      .send({
+        signUpEmail: "test_@1jhkfh.com",
+        password: "password",
+      })
+      .expect(404);
+  });
+
+  it("Checks for 401 for invalid password", async () => {
     await signUpHelper();
 
     await request(app)
@@ -35,7 +47,7 @@ describe("Tests for the sign-in route", () => {
         signUpEmail: "test_1jhkfhkdfj@test.com",
         password: "pass",
       })
-      .expect(400);
+      .expect(401);
   });
 
   it("Checks for successful sign-in", async () => {

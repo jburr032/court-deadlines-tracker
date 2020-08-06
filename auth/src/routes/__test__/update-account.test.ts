@@ -1,15 +1,12 @@
 import request from "supertest";
 import mongoose from "mongoose";
 
-import { User } from "../../models/user-model";
 import { app } from "../../app";
 
 describe("Tests for the update route", () => {
-  it("Checks the update was unsuccessful do to unauthorization", async () => {
+  it("Checks the update was unsuccessful due to unauthorization", async () => {
     const [cookie, userId] = await global.signIn();
 
-    // Expect 404 NotFound
-    // when using different cookie
     return request(app)
       .patch(`/api/v1/${userId}/update-account`)
       .send({
@@ -19,6 +16,22 @@ describe("Tests for the update route", () => {
         username: "username_22",
       })
       .expect(401);
+  });
+
+  it("Checks that a 404 is return ", async () => {
+    const [cookie, user] = await global.signIn();
+    const userId = mongoose.Types.ObjectId().toHexString();
+
+    const response = await request(app)
+      .patch(`/api/v1/${userId}/update-account`)
+      .set("Cookie", cookie)
+      .send({
+        signUpEmail: "test_1jhkfhkdfj@test.com",
+        sendFromEmail: null,
+        password: "password",
+        username: "username_22",
+      })
+      .expect(404);
   });
 
   it("Checks a username update was successful", async () => {
