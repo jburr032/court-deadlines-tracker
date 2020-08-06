@@ -17,7 +17,7 @@ describe("Tests for sign-out route", () => {
     await signUpHelper();
 
     const response = await request(app)
-      .post("/api/v1/users/signout")
+      .post("/api/v1/sign-out")
       .send({})
       .expect(200);
 

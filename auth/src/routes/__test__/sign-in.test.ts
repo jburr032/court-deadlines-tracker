@@ -41,7 +41,7 @@ describe("Tests for the sign-in route", () => {
   it("Checks for successful sign-in", async () => {
     await signUpHelper();
 
-    await request(app)
+    const response = await request(app)
       .post("/api/v1/sign-in")
       .send({
         signUpEmail: "test_1jhkfhkdfj@test.com",

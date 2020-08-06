@@ -23,32 +23,40 @@ router.post(
   async (req: Request, res: Response) => {
     const { signUpEmail, password } = req.body;
 
-    const user = await User.findOne({ signUpEmail });
+    try {
+      const user = await User.findOne({ signUpEmail });
 
-    if (!user) {
-      throw new NotFoundError();
+      if (!user) {
+        throw new NotFoundError();
+      }
+
+      // Override TS as we perform a user search in the custom express-validator middleware
+      const confirmPassword = await PasswordHasher.comparePassword(
+        user!.password,
+        password
+      );
+
+      if (!confirmPassword) {
+        throw new NotAuthorizedError();
+      }
+
+      const jwToken = jwt.sign(
+        {
+          id: signUpEmail,
+          password: password,
+        },
+        "abjjhjd" //process.env.JWT_KEY!
+      );
+
+      req.session = { jwt: jwToken };
+
+      res.status(200).send(user);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      res.status(500);
     }
-
-    // Override TS as we perform a user search in the custom express-validator middleware
-    const confirmPassword = await PasswordHasher.comparePassword(
-      user!.password,
-      password
-    );
-
-    if (!confirmPassword) {
-      throw new NotAuthorizedError();
-    }
-
-    const jwToken = jwt.sign(
-      {
-        id: signUpEmail,
-        password: password,
-      },
-      "abjjhjd" //process.env.JWT_KEY!
-    );
-
-    req.session = { jwt: jwToken };
-
-    res.status(200).send(user);
   }
 );
+
+export { router as signInRouter };
