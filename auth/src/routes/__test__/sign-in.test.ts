@@ -38,18 +38,6 @@ describe("Tests for the sign-in route", () => {
       .expect(400);
   });
 
-  it("Checks for 401 for invalid email and password", async () => {
-    await signUpHelper();
-
-    await request(app)
-      .post("/api/v1/sign-in")
-      .send({
-        signUpEmail: "test_1jhkfhkdfj@test.com",
-        password: "password",
-      })
-      .expect(401);
-  });
-
   it("Checks for successful sign-in", async () => {
     await signUpHelper();
 
