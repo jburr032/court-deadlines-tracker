@@ -5,7 +5,6 @@ import { User } from "../models/user-model";
 import {
   requireAuth,
   NotFoundError,
-  validateRequest,
   NotAuthorizedError,
 } from "@parkerco/common";
 
@@ -19,12 +18,12 @@ router.patch(
       const user = await User.findById(req.params.userId);
 
       if (!user) {
-        throw new NotFoundError();
+        return res.status(404).send();
       }
 
       // Type coercion to compare String to Number
       if (req.currentUser!.id != user._id) {
-        throw new NotAuthorizedError();
+        return res.status(401).send();
       }
 
       const { username, signUpEmail, sendFromEmail, password } = req.body;

@@ -1,8 +1,8 @@
 import express, { Request, Response } from "express";
 import {
   requireAuth,
-  NotFoundError,
   NotAuthorizedError,
+  NotFoundError,
 } from "@parkerco/common";
 import { body } from "express-validator";
 
@@ -26,31 +26,30 @@ router.delete(
       user = await User.findById(userId);
 
       if (!user) {
-        console.log("NOT FOUND!!");
-        throw new NotFoundError();
+        return res.status(400).send();
       }
 
       // Type coercion to compare String to Number
-      if (req.currentUser!.id != user._id) {
-        throw new Error("not authorised");
+      if (req.currentUser!.id != user!._id) {
+        return res.status(401).send();
       }
 
       const passwordComparison = await PasswordHasher.comparePassword(
-        user.password,
+        user!.password,
         password
       );
 
       if (!passwordComparison) {
-        throw new NotAuthorizedError();
+        return res.status(401).send();
       }
 
-      await User.findByIdAndDelete(user.id);
+      await User.findByIdAndDelete(user!.id);
 
-      res.send(200);
+      res.status(200).send();
     } catch (error) {
       console.error(error);
     } finally {
-      res.status(500).send();
+      return res.status(500).send();
     }
   }
 );

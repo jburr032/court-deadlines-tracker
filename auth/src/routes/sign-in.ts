@@ -1,24 +1,16 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
-import {
-  validateRequest,
-  NotAuthorizedError,
-  NotFoundError,
-} from "@parkerco/common";
+import { validateRequest } from "@parkerco/common";
 import jwt from "jsonwebtoken";
 
 import { User } from "../models/user-model";
 import PasswordHasher from "../services/password-hasher";
-import { doPasswordChecks } from "../services/custom-body-validators";
 
 const router = express.Router();
 
 router.post(
   "/api/v1/sign-in",
-  [
-    body("signUpEmail").isEmail().notEmpty(),
-    body("password").custom((password) => doPasswordChecks(password)),
-  ],
+  [body("signUpEmail").isEmail().notEmpty(), body("password").notEmpty()],
   validateRequest,
   async (req: Request, res: Response) => {
     const { signUpEmail, password } = req.body;
@@ -27,7 +19,7 @@ router.post(
       const user = await User.findOne({ signUpEmail });
 
       if (!user) {
-        throw new NotFoundError();
+        return res.status(404).send();
       }
 
       // Override TS as we perform a user search in the custom express-validator middleware
@@ -37,7 +29,7 @@ router.post(
       );
 
       if (!confirmPassword) {
-        throw new NotAuthorizedError();
+        return res.status(401).send();
       }
 
       const jwToken = jwt.sign(
@@ -54,7 +46,7 @@ router.post(
     } catch (error) {
       console.error(error);
     } finally {
-      res.status(500);
+      res.status(500).send();
     }
   }
 );
