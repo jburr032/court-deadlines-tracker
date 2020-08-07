@@ -16,14 +16,13 @@ router.delete(
   "/api/v1/:userId/delete-account",
   requireAuth,
   async (req: Request, res: Response) => {
-    let user;
     const {
       params: { userId },
       body: { password },
     } = req;
 
     try {
-      user = await User.findById(userId);
+      const user = await User.findById(userId);
 
       if (!user) {
         return res.status(400).send();
