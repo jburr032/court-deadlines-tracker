@@ -17,5 +17,5 @@ describe("Test for update-case route", () => {
   it("Checks for 200 for valid update of case number", () => {});
   it("Checks for 200 for valid update of parties", () => {});
   it("Checks for 200 for valid update of addedUsers", () => {});
-  it("Checks for 200 for valid update of owner");
+  it("Checks for 200 for valid update of owner", () => {});
 });
