@@ -45,9 +45,7 @@ router.post(
 
       res.status(201).send(user);
     } catch (error) {
-      console.error(error);
-    } finally {
-      res.status(500);
+      res.status(error.statusCode).send(error.message);
     }
   }
 );

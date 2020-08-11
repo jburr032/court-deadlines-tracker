@@ -25,12 +25,12 @@ router.delete(
       const user = await User.findById(userId);
 
       if (!user) {
-        return res.status(400).send();
+        throw new NotFoundError();
       }
 
       // Type coercion to compare String to Number
       if (req.currentUser!.id != user!._id) {
-        return res.status(401).send();
+        throw new NotAuthorizedError();
       }
 
       const passwordComparison = await PasswordHasher.comparePassword(
@@ -39,16 +39,14 @@ router.delete(
       );
 
       if (!passwordComparison) {
-        return res.status(401).send();
+        throw new NotAuthorizedError();
       }
 
       await User.findByIdAndDelete(user!.id);
 
       res.status(200).send();
     } catch (error) {
-      console.error(error);
-    } finally {
-      return res.status(500).send();
+      res.status(error.statusCode).send(error.message);
     }
   }
 );

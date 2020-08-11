@@ -18,12 +18,12 @@ router.patch(
       const user = await User.findById(req.params.userId);
 
       if (!user) {
-        return res.status(404).send();
+        throw new NotFoundError();
       }
 
       // Type coercion to compare String to Number
       if (req.currentUser!.id != user._id) {
-        return res.status(401).send();
+        throw new NotAuthorizedError();
       }
 
       const { username, signUpEmail, sendFromEmail, password } = req.body;
@@ -39,9 +39,7 @@ router.patch(
 
       res.status(200).send(user);
     } catch (error) {
-      console.error(error);
-    } finally {
-      res.status(500).send();
+      res.status(error.statusCode).send(error.message);
     }
   }
 );

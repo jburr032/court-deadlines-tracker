@@ -25,7 +25,7 @@ describe("Tests for the delete route", () => {
       .expect(401);
   });
 
-  it("Checks 401 for incorred userId", async () => {
+  it("Checks 404 for unfound user with invalid userId", async () => {
     let [cookie, userId] = await global.signIn();
     userId = mongoose.Types.ObjectId().toHexString();
 
@@ -33,7 +33,7 @@ describe("Tests for the delete route", () => {
       .delete(`/api/v1/${userId}/delete-account`)
       .set("Cookie", cookie)
       .send({ password: "password" })
-      .expect(400);
+      .expect(404);
   });
 
   it("Checks the account is removed from mongoDB", async () => {
