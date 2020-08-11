@@ -1,7 +1,7 @@
 import request from "supertest";
 
-import { User } from "../../models/user-model";
 import { app } from "../../app";
+import { response } from "express";
 
 // Helper sign-up function
 const signUpHelper = async () => {
@@ -26,10 +26,10 @@ describe("Tests for the sign-in route", () => {
       .expect(400);
   });
 
-  it("Checks for 404 for non-existent email (by-passes the express-validator checks", async () => {
+  it("Checks for 404 for non-existent email (by-passes the express-validator checks)", async () => {
     await signUpHelper();
 
-    await request(app)
+    const response = await request(app)
       .post("/api/v1/sign-in")
       .send({
         signUpEmail: "test_@1jhkfh.com",
@@ -41,7 +41,7 @@ describe("Tests for the sign-in route", () => {
   it("Checks for 401 for invalid password", async () => {
     await signUpHelper();
 
-    await request(app)
+    const response = await request(app)
       .post("/api/v1/sign-in")
       .send({
         signUpEmail: "test_1jhkfhkdfj@test.com",

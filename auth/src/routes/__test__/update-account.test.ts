@@ -7,7 +7,7 @@ describe("Tests for the update route", () => {
   it("Checks the update was unsuccessful due to unauthorization", async () => {
     const [cookie, userId] = await global.signIn();
 
-    return request(app)
+    const response = await request(app)
       .patch(`/api/v1/${userId}/update-account`)
       .send({
         signUpEmail: "test_1jhkfhkdfj@test.com",
